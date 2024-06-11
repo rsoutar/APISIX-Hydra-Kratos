@@ -1,23 +1,18 @@
 version: "3.7"
 services:
-
   ### KRATOS ###
   kratos-migrate:
     image: oryd/kratos:v1.1.0
     environment:
       - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
     volumes:
-      - type: volume
-        source: kratos-sqlite
-        target: /var/lib/sqlite
-        read_only: false
-      - type: bind
-        source: ./config
-        target: /etc/config/kratos
+      - kratos-sqlite:/var/lib/sqlite
+      - ./config:/etc/config/kratos
     command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
     restart: on-failure
     networks:
       - intranet
+
   kratos-selfservice-ui-node:
     image: oryd/kratos-selfservice-ui-node:v1.1.0
     ports:
@@ -34,31 +29,26 @@ services:
     networks:
       - intranet
     restart: on-failure
+
   kratos:
     depends_on:
       - kratos-migrate
     image: oryd/kratos:v1.1.0
     ports:
-      - '4433:4433' # public
-      - '4434:4434' # admin
+      - "4433:4433" # public
+      - "4434:4434" # admin
     restart: unless-stopped
     environment:
       - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
       - LOG_LEVEL=trace
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     volumes:
-      - type: volume
-        source: kratos-sqlite
-        target: /var/lib/sqlite
-        read_only: false
-      - type: bind
-        source: ./config
-        target: /etc/config/kratos
+      - kratos-sqlite:/var/lib/sqlite
+      - ./config:/etc/config/kratos
     networks:
       - intranet
 
   ### HYDRA ###
-  
   hydra:
     image: oryd/hydra:v2.2.0
     ports:
@@ -67,13 +57,8 @@ services:
       - "5555:5555" # Port for hydra token user
     command: serve -c /etc/config/hydra/hydra.yml all --dev
     volumes:
-      - type: volume
-        source: hydra-sqlite
-        target: /var/lib/sqlite
-        read_only: false
-      - type: bind
-        source: ./config
-        target: /etc/config/hydra
+      - hydra-sqlite:/var/lib/sqlite
+      - ./config:/etc/config/hydra
     environment:
       - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
     restart: unless-stopped
@@ -81,25 +66,51 @@ services:
       - hydra-migrate
     networks:
       - intranet
+
   hydra-migrate:
     image: oryd/hydra:v2.2.0
     environment:
       - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
     command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
     volumes:
-      - type: volume
-        source: hydra-sqlite
-        target: /var/lib/sqlite
-        read_only: false
-      - type: bind
-        source: ./config
-        target: /etc/config/hydra
+      - hydra-sqlite:/var/lib/sqlite
+      - ./config:/etc/config/hydra
     restart: on-failure
     networks:
       - intranet
 
+  ### APISIX ###
+  apisix:
+    image: apache/apisix:latest
+    ports:
+      - "9080:9080" # Default HTTP port
+      - "9443:9443" # Default HTTPS port
+    volumes:
+      - ./apisix_conf:/usr/local/apisix/conf
+    networks:
+      - intranet
+    depends_on:
+      - hydra
+      - kratos
+
+  ### OATHKEEPER ###
+  oathkeeper:
+    image: oryd/oathkeeper:v0.38.19-beta.1
+    ports:
+      - "4456:4456" # Public port
+      - "4457:4457" # Management API port
+    volumes:
+      - ./config:/etc/config/oathkeeper
+    command: serve -c /etc/config/oathkeeper/oathkeeper.yml --dev
+    networks:
+      - intranet
+    depends_on:
+      - hydra
+      - kratos
+
 networks:
   intranet:
+
 volumes:
   hydra-sqlite:
   kratos-sqlite:
