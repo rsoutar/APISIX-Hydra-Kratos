@@ -16,43 +16,52 @@
               "credentials": {
                 "password": {
                   "identifier": true
-                },
-                "webauthn": {
-                  "identifier": true
-                },
-                "code": {
-                  "identifier": true,
-                  "via": "email"
                 }
-              },
-              "verification": {
-                "via": "email"
-              },
-              "recovery": {
-                "via": "email"
               }
             }
           },
-          "name": {
-            "type": "object",
-            "properties": {
-              "first": {
-                "title": "First Name",
-                "type": "string"
-              },
-              "last": {
-                "title": "Last Name",
-                "type": "string"
-              },
-              "thai-d": {
-                "title": "National ID number",
-                "type": "string"
+          "phone": {
+            "type": "string",
+            "format": "phone",
+            "title": "Phone Number",
+            "minLength": 10,
+            "ory.sh/kratos": {
+              "credentials": {
+                "code": {
+                  "identifier": true
+                }
               }
             }
+          },
+          "pid": {
+            "type": "string",
+            "title": "Personal ID"
+          },
+          "name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "name_en": {
+            "type": "string",
+            "title": "Full Name in English"
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date",
+            "title": "Birthdate"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address"
+          },
+          "gender": {
+            "type": "string",
+            "title": "Gender"
           }
         },
-        "required": ["email"],
+        "required": ["email", "phone", "pid"],
         "additionalProperties": false
       }
     }
   }
+  
