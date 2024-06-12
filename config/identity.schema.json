@@ -19,12 +19,27 @@
                 }
               }
             }
+          },
+          "phone": {
+            "type": "string",
+            "format": "phone",
+            "title": "Phone Number",
+            "minLength": 10,
+            "ory.sh/kratos": {
+              "credentials": {
+                "code": {
+                  "identifier": true
+                }
+              }
+            }
           }
         },
         "required": [
-          "email"
+          "email",
+          "phone"
         ],
         "additionalProperties": false
       }
     }
   }
+  
