@@ -8,22 +8,19 @@ access_rules:
   repositories:
     - file:///etc/config/oathkeeper/access-rules.json
 
-authenticator:
-  handlers:
-    oauth2_introspection:
-      enabled: true
-      config:
-        introspection_url: http://hydra:4445/oauth2/introspect
-        pre_authorization:
-          client_id: your-client-id
-          client_secret: your-client-secret
+authenticators:
+  oauth2_introspection:
+    enabled: true
+    config:
+      introspection_url: http://hydra:4445/oauth2/introspect
+      pre_authorization:
+        client_id: your-client-id
+        client_secret: your-client-secret
 
-authorizer:
-  handlers:
-    allow:
-      enabled: true
+authorizers:
+  allow:
+    enabled: true
 
-mutator:
-  handlers:
-    noop:
-      enabled: true
+mutators:
+  noop:
+    enabled: true

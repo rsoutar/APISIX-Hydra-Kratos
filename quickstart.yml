@@ -41,7 +41,7 @@ services:
     environment:
       - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
       - LOG_LEVEL=trace
-    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
+    command: serve -c /etc/config/kratos/kratos.yml --watch-courier
     volumes:
       - kratos-sqlite:/var/lib/sqlite
       - ./config:/etc/config/kratos
@@ -81,36 +81,59 @@ services:
 
   ### APISIX ###
   apisix:
-    image: apache/apisix:latest
-    ports:
-      - "9080:9080" # Default HTTP port
-      - "9443:9443" # Default HTTPS port
+    image: apache/apisix:2.13.1-alpine
+    restart: always
     volumes:
-      - ./apisix_conf:/usr/local/apisix/conf
+      - ./apisix_log:/usr/local/apisix/logs
+      - ./apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
+    depends_on:
+      - etcd
+    ports:
+      - "9080:9080/tcp"
+      - "9091:9091/tcp"
+      - "9443:9443/tcp"
+      - "9092:9092/tcp"
     networks:
       - intranet
-    depends_on:
-      - hydra
-      - kratos
+
+  ### ETCD ###
+  etcd:
+    image: bitnami/etcd:3.4.15
+    restart: always
+    volumes:
+      - etcd_data:/bitnami/etcd
+    environment:
+      ETCD_ENABLE_V2: "true"
+      ALLOW_NONE_AUTHENTICATION: "yes"
+      ETCD_ADVERTISE_CLIENT_URLS: "http://0.0.0.0:2379"
+      ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
+    ports:
+      - "12379:2379/tcp"
+    networks:
+      - intranet
 
   ### OATHKEEPER ###
   oathkeeper:
-    image: oryd/oathkeeper:v0.38.19-beta.1
+    image: oryd/oathkeeper:v0.40.7
     ports:
       - "4456:4456" # Public port
       - "4457:4457" # Management API port
     volumes:
       - ./config:/etc/config/oathkeeper
-    command: serve -c /etc/config/oathkeeper/oathkeeper.yml --dev
+    command: serve -c /etc/config/oathkeeper/oathkeeper.yml
     networks:
       - intranet
     depends_on:
       - hydra
       - kratos
+    restart: on-failure
 
 networks:
   intranet:
+    external:
+      name: apisix-hydra-kratos_intranet
 
 volumes:
   hydra-sqlite:
   kratos-sqlite:
+  etcd_data:
