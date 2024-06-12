@@ -16,30 +16,43 @@
               "credentials": {
                 "password": {
                   "identifier": true
+                },
+                "webauthn": {
+                  "identifier": true
+                },
+                "code": {
+                  "identifier": true,
+                  "via": "email"
                 }
+              },
+              "verification": {
+                "via": "email"
+              },
+              "recovery": {
+                "via": "email"
               }
             }
           },
-          "phone": {
-            "type": "string",
-            "format": "phone",
-            "title": "Phone Number",
-            "minLength": 10,
-            "ory.sh/kratos": {
-              "credentials": {
-                "code": {
-                  "identifier": true
-                }
+          "name": {
+            "type": "object",
+            "properties": {
+              "first": {
+                "title": "First Name",
+                "type": "string"
+              },
+              "last": {
+                "title": "Last Name",
+                "type": "string"
+              },
+              "thai-d": {
+                "title": "National ID number",
+                "type": "string"
               }
             }
           }
         },
-        "required": [
-          "email",
-          "phone"
-        ],
+        "required": ["email"],
         "additionalProperties": false
       }
     }
   }
-  
