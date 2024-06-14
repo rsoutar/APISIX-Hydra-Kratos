@@ -74,12 +74,13 @@ selfservice:
         providers:
           - id: thai-d
             provider: generic
-            client_id: 
-            client_secret: 
-            issuer_url: 
-            auth_url: 
-            token_url: 
+            client_id: YOUR_THAID_CLIENT_ID
+            client_secret: YOUR_THAID_CLIENT_SECRET
+            issuer_url: YOUR_THAID_ISSUER_URL
+            auth_url: YOUR_THAID_AUTH_URL
+            token_url: YOUR_THAID_TOKEN_URL
             mapper_url: file://path/to/oidc.jsonnet
+        base_redirect_uri: YOUR_THAID_BASE_REDIRECT_URI
 
 log:
   level: debug
@@ -107,8 +108,20 @@ identity:
       url: file:///etc/config/kratos/identity.schema.json
 
 courier:
-  smtp:
-    connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
+  delivery_strategy: http
+  http:
+    request_config:
+      url: https://api.sendgrid.com/v3/mail/send
+      method: POST
+      body: base64://BASE_64_JSONNET_PERSONALIZED_TO_MATCH_SENDGRID_BODY
+      headers:
+        'Content-Type': 'application/json'
+      auth:
+        type: api_key
+        config:
+          name: Authorization
+          value: Bearer YOUR_SENDGRID_API_KEY
+          in: header
 
 feature_flags:
   use_continue_with_transitions: true
