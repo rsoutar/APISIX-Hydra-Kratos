@@ -1,4 +1,4 @@
-version: v1.1.0
+version: v1.2.0
 
 dsn: memory
 
@@ -58,6 +58,8 @@ selfservice:
   methods:
     password:
       enabled: true
+      config:
+        haveibeenpwned_enabled: false
     totp:
       config:
         issuer: Kratos
@@ -74,13 +76,13 @@ selfservice:
         providers:
           - id: thai-d
             provider: generic
-            client_id: YOUR_THAID_CLIENT_ID
-            client_secret: YOUR_THAID_CLIENT_SECRET
-            issuer_url: YOUR_THAID_ISSUER_URL
-            auth_url: YOUR_THAID_AUTH_URL
-            token_url: YOUR_THAID_TOKEN_URL
+            client_id: THAID-CLIENT-ID
+            client_secret: THAID-CLIENT-SECRET
+            issuer_url: THAID-ISSUER-URL
+            auth_url: THAID-AUTH-URL
+            token_url: THAID-TOKEN-URL
             mapper_url: file://path/to/oidc.jsonnet
-        base_redirect_uri: YOUR_THAID_BASE_REDIRECT_URI
+        base_redirect_uri: THAID-REDIRECT-URI
 
 log:
   level: debug
@@ -113,14 +115,14 @@ courier:
     request_config:
       url: https://api.sendgrid.com/v3/mail/send
       method: POST
-      body: base64://BASE_64_JSONNET_PERSONALIZED_TO_MATCH_SENDGRID_BODY
+      body: base64://BASE-64-JSONNET-PERSONALIZED-TO-MATCH-SENDGRID-BODY
       headers:
         'Content-Type': 'application/json'
       auth:
         type: api_key
         config:
           name: Authorization
-          value: Bearer YOUR_SENDGRID_API_KEY
+          value: Bearer YOUR-SENDGRID-API-KEY
           in: header
 
 feature_flags:

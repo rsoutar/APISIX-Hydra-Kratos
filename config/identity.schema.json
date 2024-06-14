@@ -8,30 +8,28 @@
         "type": "object",
         "properties": {
           "email": {
-            "type": "string",
-            "format": "email",
-            "title": "E-Mail",
-            "minLength": 3,
-            "ory.sh/kratos": {
-              "credentials": {
-                "password": {
-                  "identifier": true
-                }
+          "type": "string",
+          "format": "email",
+          "title": "E-Mail",
+          "minLength": 3,
+          "ory.sh/kratos": {
+            "credentials": {
+              "password": {
+                "identifier": true
               }
+            },
+            "verification": {
+              "via": "email"
+            },
+            "recovery": {
+              "via": "email"
             }
-          },
+          }
+        },
           "phone": {
             "type": "string",
-            "format": "phone",
             "title": "Phone Number",
-            "minLength": 10,
-            "ory.sh/kratos": {
-              "credentials": {
-                "code": {
-                  "identifier": true
-                }
-              }
-            }
+            "minLength": 10
           },
           "pid": {
             "type": "string",
