@@ -76,13 +76,13 @@ selfservice:
         providers:
           - id: thai-d
             provider: generic
-            client_id: THAID-CLIENT-ID
-            client_secret: THAID-CLIENT-SECRET
-            issuer_url: THAID-ISSUER-URL
-            auth_url: THAID-AUTH-URL
-            token_url: THAID-TOKEN-URL
+            client_id: YOUR_CLIENT_ID
+            client_secret: YOUR_CLIENT_SECRET
+            issuer_url: YOUR_ISSUER_URL
+            auth_url: YOUR_AUTH_URL
+            token_url: YOUR_TOKEN_URL
             mapper_url: file://path/to/oidc.jsonnet
-        base_redirect_uri: THAID-REDIRECT-URI
+        base_redirect_uri: YOUR_BASE_REDIRECT_URI
 
 log:
   level: debug
@@ -103,11 +103,17 @@ hashers:
   bcrypt:
     cost: 8
 
+# identity:
+#   default_schema_id: default
+#   schemas:
+#     - id: default
+#       url: file:///etc/config/kratos/identity.schema.json
+
 identity:
-  default_schema_id: default
+  default_schema_id: user_test
   schemas:
-    - id: default
-      url: file:///etc/config/kratos/identity.schema.json
+    - id: user_test
+      url: file:///etc/config/kratos/user_test.json
 
 courier:
   delivery_strategy: http
@@ -115,14 +121,14 @@ courier:
     request_config:
       url: https://api.sendgrid.com/v3/mail/send
       method: POST
-      body: base64://BASE-64-JSONNET-PERSONALIZED-TO-MATCH-SENDGRID-BODY
+      body: YOUR_BASE64_ENCODED_PAYLOAD
       headers:
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       auth:
         type: api_key
         config:
           name: Authorization
-          value: Bearer YOUR-SENDGRID-API-KEY
+          value: Bearer YOUR_SENDGRID_API
           in: header
 
 feature_flags:

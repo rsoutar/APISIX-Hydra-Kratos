@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.8"
 services:
   ### KRATOS ###
   kratos-migrate:
@@ -25,7 +25,16 @@ services:
       - COOKIE_SECRET=changeme
       - CSRF_COOKIE_NAME=cookie_name
       - CSRF_COOKIE_SECRET=changeme
-      - DANGEROUSLY_DISABLE_SECURE_CSRF_COOKIES=true
+      # - DANGEROUSLY_DISABLE_SECURE_CSRF_COOKIES=true
+      # - THAI_D_CLIENT_ID=${THAI_D_CLIENT_ID}
+      # - THAI_D_CLIENT_SECRET=${THAI_D_CLIENT_SECRET}
+      # - THAI_D_ISSUER_URI=${THAI_D_ISSUER_URI}
+      # - THAI_D_AUTH_URL=${THAI_D_AUTH_URL}
+      # - THAI_D_TOKEN_URL=${THAI_D_TOKEN_URL}
+      # - THAI_D_BASE_REDIRECT_URI=${THAI_D_BASE_REDIRECT_URI}
+      # - SENDGRID_BODY=${SENDGRID_BODY}
+      # - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+    # entrypoint: ["/bin/sh", "-c", "envsubst < /etc/config/kratos/kratos.yml.template > /etc/config/kratos/kratos.yml && kratos serve --config /etc/config/kratos/kratos.yml"]
     networks:
       - intranet
     restart: on-failure
@@ -41,7 +50,7 @@ services:
     environment:
       - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
       - LOG_LEVEL=trace
-    command: serve -c /etc/config/kratos/kratos.yml --watch-courier
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     volumes:
       - kratos-sqlite:/var/lib/sqlite
       - ./config:/etc/config/kratos
