@@ -1,12 +1,11 @@
 version: "3.8"
 services:
-  ### KRATOS ###
   kratos-migrate:
     image: oryd/kratos:v1.2.0
     environment:
-      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+      - DSN=postgres://postgres:secret@postgresd:5432/kratos?sslmode=disable
     volumes:
-      - kratos-sqlite:/var/lib/sqlite
+      - kratos-postgres-data:/var/lib/postgresql/data
       - ./config:/etc/config/kratos
     command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
     restart: on-failure
@@ -25,16 +24,6 @@ services:
       - COOKIE_SECRET=changeme
       - CSRF_COOKIE_NAME=cookie_name
       - CSRF_COOKIE_SECRET=changeme
-      # - DANGEROUSLY_DISABLE_SECURE_CSRF_COOKIES=true
-      # - THAI_D_CLIENT_ID=${THAI_D_CLIENT_ID}
-      # - THAI_D_CLIENT_SECRET=${THAI_D_CLIENT_SECRET}
-      # - THAI_D_ISSUER_URI=${THAI_D_ISSUER_URI}
-      # - THAI_D_AUTH_URL=${THAI_D_AUTH_URL}
-      # - THAI_D_TOKEN_URL=${THAI_D_TOKEN_URL}
-      # - THAI_D_BASE_REDIRECT_URI=${THAI_D_BASE_REDIRECT_URI}
-      # - SENDGRID_BODY=${SENDGRID_BODY}
-      # - SENDGRID_API_KEY=${SENDGRID_API_KEY}
-    # entrypoint: ["/bin/sh", "-c", "envsubst < /etc/config/kratos/kratos.yml.template > /etc/config/kratos/kratos.yml && kratos serve --config /etc/config/kratos/kratos.yml"]
     networks:
       - intranet
     restart: on-failure
@@ -48,11 +37,11 @@ services:
       - "4434:4434" # admin
     restart: unless-stopped
     environment:
-      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+      - DSN=postgres://postgres:secret@postgresd:5432/kratos?sslmode=disable
       - LOG_LEVEL=trace
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     volumes:
-      - kratos-sqlite:/var/lib/sqlite
+      - kratos-postgres-data:/var/lib/postgresql/data
       - ./config:/etc/config/kratos
     networks:
       - intranet
@@ -144,5 +133,5 @@ networks:
 
 volumes:
   hydra-sqlite:
-  kratos-sqlite:
+  kratos-postgres-data:
   etcd_data:

@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  kratos-migrate:
+    environment:
+      - DSN=postgres://kratos:secret@postgresd:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
+    networks:
+      - intranet
+
+  kratos:
+    environment:
+      - DSN=postgres://kratos:secret@postgresd:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
+    networks:
+      - intranet
+
+  postgresd:
+    image: postgres:11.8
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=kratos
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=kratos
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - intranet
+
+networks:
+  intranet:
+    external:
+      name: apisix-hydra-kratos_intranet
+
+volumes:
+  postgres_data:
